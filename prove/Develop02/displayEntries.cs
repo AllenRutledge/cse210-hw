@@ -1,8 +1,8 @@
-public class displayEntries{
-    public List<string> entries = new List<string>(){};
-    public string displayCombo(){
+public class DisplayEntries{
+    public List<string> _entries = new List<string>(){};
+    public string _displayCombo(){
         string combinedEntries = "";
-        foreach(var entry in entries){
+        foreach(var entry in _entries){
             combinedEntries = ($"{combinedEntries}{entry}\n");
         }
         return combinedEntries;

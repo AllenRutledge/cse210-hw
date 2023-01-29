@@ -4,7 +4,7 @@ class Program
     static void Main(string[] args)
     {
         int menuNum = 0;
-        var writtenEntries = new displayEntries(){};
+        var writtenEntries = new DisplayEntries(){};
             while (menuNum != 5){
                 Console.WriteLine("-=Welcome to the Journal!=-");
                 Console.WriteLine("Please Select 1-5");
@@ -17,24 +17,24 @@ class Program
                 menuNum = int.Parse(Console.ReadLine());
             
                 if (menuNum == 1){
-                    writePrompt prompt1 = new writePrompt(writtenEntries);
-                    string entry1 = prompt1.displayPrompt();
+                    WritePrompt prompt1 = new WritePrompt(writtenEntries);
+                    string entry1 = prompt1._displayPrompt();
                     Console.WriteLine(entry1);
                     Console.WriteLine();
                 }else if(menuNum == 2){
-                    string combo1 = writtenEntries.displayCombo();
+                    string combo1 = writtenEntries._displayCombo();
                     Console.WriteLine(combo1);
                 }else if(menuNum == 3){
                     Console.Write("Input file name to be loaded: ");
                     string fileName = Console.ReadLine();
-                    var myLoadFile = new journalFile(writtenEntries);
-                    myLoadFile.loadFile(fileName);
+                    var myLoadFile = new JournalFile(writtenEntries);
+                    myLoadFile._loadFile(fileName);
                     Console.WriteLine($"{fileName}.txt loaded!");
                 }else if(menuNum == 4){
                     Console.Write("Input file name to be saved: ");
                     string fileName = Console.ReadLine();
-                    var mySaveFile = new journalFile(writtenEntries);
-                    mySaveFile.saveFile(fileName);
+                    var mySaveFile = new JournalFile(writtenEntries);
+                    mySaveFile._saveFile(fileName);
                     Console.WriteLine($"{fileName}.txt saved!");
                 }
             }
