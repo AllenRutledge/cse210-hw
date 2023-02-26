@@ -24,10 +24,10 @@ public class ActiveReflect : Timer{
     }
 
     public void Reflecting(int time){
-        _reps = ((time/1000) / (_repTime));
+        _reps = ((time/1000) / (_repTime*2));
         while(_reps > 0){
             Console.WriteLine(ReflectPrompt());
-            ClockTick(_repTime*1000);
+            ClockTick(_repTime*2000);
             _reps--;
         }
         SayDone();
