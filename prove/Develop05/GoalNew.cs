@@ -2,8 +2,8 @@ public class GoalNew{
     public int _goalType;
     public string _goalName;
     public string _goalDesc;
-    public int _goalScore;
-    public int _goalBonus;
+    private int _goalScore;
+    private int _goalBonus;
     public int _goalTimes;
     public int _goalDone;
     private GoalList _writtenEntries;
