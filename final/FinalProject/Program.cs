@@ -1,6 +1,7 @@
 using System;
 class Program{
     static void Main(string[] args){
-        Console.WriteLine("Hello FinalProject World!");
+        Game myGame = new Game(20, 10);
+        myGame.Run();
     }
 }

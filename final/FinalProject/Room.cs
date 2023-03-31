@@ -9,9 +9,10 @@ public class Room{
     public int _playY { get; private set; }
     // Has locked door?
     public bool _doorsLocked { get; private set; }
-    // Key position, who is guarding it?
+    // Key position
     public int _keyX { get; private set; }
     public int _keyY { get; private set; }
+    // Enemy position
     public int _enemyX { get; private set; }
     public int _enemyY { get; private set; }
     private List<Pawn> _pawns;
@@ -24,6 +25,8 @@ public class Room{
         // Max + 1 for consistency
         _width = rand.Next(minW, maxW + 1);
         _height = rand.Next(minH, maxH + 1);
+        // Pawns list
+        _pawns = new List<Pawn>();
         // Make empty room
         _roomArray = new char[_width, _height];
         for (int x = 0; x < _width; x++){
@@ -58,14 +61,16 @@ public class Room{
         // Enemies are somewhere
         int _enemiesPlaced = 0;
         while (_enemiesPlaced < 2){
-            int _enemyX = rand.Next(1, _width - 1);
-            int _enemyY = rand.Next(1, _height - 1);
-            if (_roomArray[_enemyX, _enemyY] == '.'){
+            int enemyX = rand.Next(1, _width - 1);
+            int enemyY = rand.Next(1, _height - 1);
+            if (_roomArray[enemyX, enemyY] == '.'){
                 // Put enemy here. Is $, %, or &
-            _roomArray[_enemyX, _enemyY] = rand.NextDouble() < 0.333 ? '&' : rand.NextDouble() < 0.5 ? '%' : '$';
-            _enemiesPlaced++;
+                _roomArray[enemyX, enemyY] = rand.NextDouble() < 0.333 ? '&' : rand.NextDouble() < 0.5 ? '%' : '$';
+                _pawns.Add(new Pawn(this, "Enemy", 100, 100, 10, 5, false, enemyX, enemyY));
+                _enemiesPlaced++;
             }
         }
+
          if (rand.NextDouble() < 0.3){
             _doorsLocked = true;
             // Key is somewhere
@@ -88,7 +93,6 @@ public class Room{
                 }
             }
         }
-        _pawns = new List<Pawn>();
     }
     public void RemoveTarget(int x, int y){
         _roomArray[x, y] = '.';
@@ -110,11 +114,12 @@ public class Room{
         int minDist = int.MaxValue;
         for (int i = 0; i < _roomArray.GetLength(0); i++){
             for (int j = 0; j < _roomArray.GetLength(1); j++){
-                if (_roomArray[i, j] == '@'){
-                    int dist = Math.Abs(i - x) + Math.Abs(j - y);
+                Pawn pawn = GetPawnAt(i,j);
+                if (pawn != null && pawn._isAlive){
+                    int dist = Math.Abs(x - i) + Math.Abs(y - j);
                     if (dist < minDist){
-                        closestPawn = GetPawnAt(i, j);
                         minDist = dist;
+                        closestPawn = pawn;
                     }
                 }
             }
@@ -133,5 +138,4 @@ public class Room{
         _roomArray[pawn._x, pawn._y] = pawn._symbol;
     }
 }
-
 }

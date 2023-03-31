@@ -35,9 +35,4 @@
     public void TargetPlayer(Player player){
         _target = player;
     }
-    public override int Attack(Pawn target){
-        int damage = base.Attack(target);
-        Console.WriteLine($"{_name} attacks {target._name} for {damage} damage!");
-        return damage;
-    }
 }
