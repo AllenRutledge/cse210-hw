@@ -1,5 +1,4 @@
 using System;
-
 public class Room{
     // Size
     public int _width { get; private set; }
@@ -16,11 +15,15 @@ public class Room{
     public int _enemyX { get; private set; }
     public int _enemyY { get; private set; }
     private List<Pawn> _pawns;
-    
+    private Player _player;
+    Random rand = new Random();
+    private string[] _roomLayout;
+    public string[] RoomLayout {
+        get { return _roomLayout; }
+    }
     public char[,] _roomArray = new char[10,10];
     // Generate room
     public Room(int minW, int maxW, int minH, int maxH){
-        Random rand = new Random();
         // Generate width and height randomly, within bounds
         // Max + 1 for consistency
         _width = rand.Next(minW, maxW + 1);
@@ -34,70 +37,96 @@ public class Room{
                 _roomArray[x, y] = '.';
             }
         }
-        // Fill edges with wall (#)
-        for (int x = 0; x < _width; x++){
-            // North, south
-            _roomArray[x, 0] = '#';
-            _roomArray[x, _height - 1] = '#';
-        }for (int y = 0; y < _height; y++) {
-            // West, east
-            _roomArray[0, y] = '#';
-            _roomArray[_width - 1, y] = '#';
+    }
+    public void MakeRoom(){
+        _roomLayout = new string[_height];
+        // Fill edges with wall (#) and floors (.)
+        for (int y = 0; y < _height; y++) {
+            string row = "";
+            for (int x = 0; x < _width; x++){
+                if (x == 0 || x == _width - 1 || y == 0 || y == _height - 1){
+                    row += "#";
+                } else {
+                    row += ".";
+                }
+            }
+            _roomLayout[y] = row;
         }
-        // Make 2 doors, 1 away from other door
-        int _doorX1 = rand.Next(1, _width - 1);
-        int _doorY1 = 0;
-        int _doorX2 = rand.Next(1, _width - 1);
-        int _doorY2 = _height - 1;
-        _roomArray[_doorX1, _doorY1] = '+';
-        _roomArray[_doorX2, _doorY2] = '+';
-        // Player is somewhere. Does it make sense to enter a door and be in the middle? No.
-        // However, it's fun
-        // Subtract 1 from w and h for consistency
-        _playX = rand.Next(1, _width - 1);
-        _playY = rand.Next(1, _height - 1);
-        // Player is @
-        _roomArray[_playX, _playY] = '@';
+        Player p1 = DrawPlayer(_roomLayout);
+        DrawEnemies(_roomLayout);
+        DrawKey(_roomLayout);
+        DrawRoom(_roomLayout);
+        p1.Play();
+    }
+    public Player DrawPlayer(string[] _roomLayout){
+        // Player
+        Player p1 = new Player(this, "Player", 10, 10, 2, 1, false, rand.Next(1,9), rand.Next(1,4));
+        if (_player != null){
+            _roomLayout[p1._y] = _roomLayout[p1._y].Substring(0, p1._x) + p1._symbol + _roomLayout[p1._y].Substring(p1._x + 1);
+        }
+        // Player at (_player.X, _player.Y)
+        _roomLayout[p1._y] = _roomLayout[p1._y].Substring(0, p1._x) + p1._symbol + _roomLayout[p1._y].Substring(p1._x + 1);
+        _playX = p1._x;
+        _playY = p1._y;
+        return p1;
+    }
+    public void DrawEnemies(string[] _roomLayout){
         // Enemies are somewhere
         int _enemiesPlaced = 0;
         while (_enemiesPlaced < 2){
             int enemyX = rand.Next(1, _width - 1);
             int enemyY = rand.Next(1, _height - 1);
-            if (_roomArray[enemyX, enemyY] == '.'){
+            if (_roomLayout[enemyY][enemyX] == '.'){
                 // Put enemy here. Is $, %, or &
-                _roomArray[enemyX, enemyY] = rand.NextDouble() < 0.333 ? '&' : rand.NextDouble() < 0.5 ? '%' : '$';
-                _pawns.Add(new Pawn(this, "Enemy", 100, 100, 10, 5, false, enemyX, enemyY));
+                char enemyType = rand.NextDouble() < 0.333 ? '&' : rand.NextDouble() < 0.5 ? '%' : '$';
+                _roomLayout[enemyY] = _roomLayout[enemyY].Substring(0, enemyX) + enemyType + _roomLayout[enemyY].Substring(enemyX + 1);
+                _pawns.Add(new Enemy(this, "Enemy", 5, 5, 2, 1, false, enemyX, enemyY));
                 _enemiesPlaced++;
             }
         }
-
-         if (rand.NextDouble() < 0.3){
-            _doorsLocked = true;
-            // Key is somewhere
-            // Make sure there's only one
-            bool _keyPlaced = false;
-            while (!_keyPlaced){
-                int _kX = rand.Next(1, _width - 1);
-                int _kY = rand.Next(1, _height - 1);
-                if (_roomArray[_kX, _kY] == '.'){
-                    // Don't overlap player. Enemy overlap is fine.
-                    if (_roomArray[_kX, _kY] == '@'){
-                        continue;
-                    }
-                    // Put key here, is !
-                    _roomArray[_kX, _kY] = '!';
-                    _keyX = _kX;
-                    _keyY = _kY;
-                    // Tells computer: key present
-                    _keyPlaced = true;
+    }
+    public void DrawKey(string[] _roomLayout){
+        _doorsLocked = true;
+        // Key is somewhere
+        // Make sure there's only one
+        bool _keyPlaced = false;
+        while (!_keyPlaced){
+            int _kX = rand.Next(1, _width - 1);
+            int _kY = rand.Next(1, _height - 1);
+            if (_roomLayout[_kY][_kX] == '.'){
+                // Don't overlap player or enemy
+                if (_kX == _playX && _kY == _playY){
+                    continue;
                 }
+                    if (GetPawnAt(_kX, _kY) != null){
+                    continue;
+                }
+                // Put key here, is ?
+                _roomLayout[_kY] = _roomLayout[_kY].Substring(0, _kX) + "?" + _roomLayout[_kY].Substring(_kX + 1);
+                _keyX = _kX;
+                _keyY = _kY;
+                // Tells computer: key present
+                _keyPlaced = true;
             }
         }
     }
+    public void DrawRoom(string[] _roomLayout) {
+        Console.Clear();
+        for (int y = 0; y < _roomLayout.Length; y++) {
+            Console.WriteLine(_roomLayout[y]);
+        }
+    }
+    public void UpdateLayout(string[] _roomLayout, int x, int y){
+        _roomLayout[_playY] = _roomLayout[_playY].Remove(_playX, 1).Insert(_playX, ".");
+        _playX = x;
+        _playY = y;
+        _roomLayout[_playY] = _roomLayout[_playY].Remove(_playX, 1).Insert(_playX, "@");
+    }
+
+
     public void RemoveTarget(int x, int y){
         _roomArray[x, y] = '.';
     }
-
     public Pawn GetPawnAt(int x, int y){
         foreach (Pawn pawn in _pawns){
             if (pawn._x == x && pawn._y == y){
@@ -126,16 +155,4 @@ public class Room{
         }
         return closestPawn;
     }
-    public void PlacePawns(List<Pawn> pawns){
-    _pawns = pawns;
-    _roomArray = new char[_width, _height];
-    for (int i = 0; i < _width; i++){
-        for (int j = 0; j < _height; j++){
-            _roomArray[i, j] = '.';
-        }
-    }
-    foreach (var pawn in _pawns){
-        _roomArray[pawn._x, pawn._y] = pawn._symbol;
-    }
-}
 }

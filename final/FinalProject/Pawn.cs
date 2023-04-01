@@ -1,5 +1,4 @@
 public class Pawn{
-    // Encapsulation
     private string _name;
     public string Name {
         get { return _name; }
@@ -34,44 +33,8 @@ public class Pawn{
         _y = y;
         _room._roomArray[_x, _y] = _symbol;
     }
-    // Move around
-    public virtual void Movement(){
-        ConsoleKeyInfo board = Console.ReadKey(true);  // Wait for key press
-        switch (board.Key){
-            // North
-            case ConsoleKey.W:
-            case ConsoleKey.UpArrow:
-                if (Move(_x, _y - 1)){
-                    CheckCollisions();
-                }
-                break;
-            // South
-            case ConsoleKey.S:
-            case ConsoleKey.DownArrow:
-                if (Move(_x, _y + 1)){
-                    CheckCollisions();
-                }
-                break;
-            // West
-            case ConsoleKey.A:
-            case ConsoleKey.LeftArrow:
-                if (Move(_x - 1, _y)){
-                    CheckCollisions();
-                }
-                break;
-            // East
-            case ConsoleKey.D:
-            case ConsoleKey.RightArrow:
-                if (Move(_x + 1, _y)){
-                    CheckCollisions();
-                }
-                break;
-            default:
-                // Invalid key = nothing happens
-                break;
-        }
-    }
-    private void CheckCollisions(){
+    public virtual void Movement(){}
+    public void CheckCollisions(){
         char targetChar = _room._roomArray[_x, _y];
         if (targetChar == '@' || targetChar == '$' || targetChar == '%' || targetChar == '&'){
             int targetX = _isRanged ? _x + 1 : _x;
@@ -83,16 +46,22 @@ public class Pawn{
         }
     }
     // Move
+// Move
     public bool Move(int x, int y){
-        if (_room._roomArray[x, y] == '.'){
-            _room._roomArray[_x, _y] = '.';
-            _x = x;
-            _y = y;
-            _room._roomArray[_x, _y] = '@';
-            return true;
-        }else{
+        x = Math.Clamp(x, 1, _room._roomArray.GetLength(0) - 2);
+        y = Math.Clamp(y, 1, _room._roomArray.GetLength(1) - 2);
+        // Tile is empty?
+        char destTile = _room._roomArray[x, y];
+        if (destTile != '.' && destTile != '@'){
+            // Collision detected, no move
             return false;
         }
+        // Move pawn to destination
+        _room._roomArray[_x, _y] = '.';
+        _x = x;
+        _y = y;
+        _room._roomArray[_x, _y] = '@';
+        return true;
     }
     // Attack target
     public virtual int Attack(Pawn target){
@@ -114,6 +83,7 @@ public class Pawn{
         _hp -= damage;
         if (_hp <= 0){
             Console.WriteLine($"{_name} has been defeated!");
+            Thread.Sleep(1000);
             _isAlive = false;
             _room.RemoveTarget(_x, _y);
         }else{
