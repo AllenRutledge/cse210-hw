@@ -3,8 +3,8 @@ public class Room{
     // Size
     public int _width { get; private set; }
     public int _height { get; private set; }
-    public int _playX { get; private set; }
-    public int _playY { get; private set; }
+    public int _playX;
+    public int _playY;
     // Key position
     public int _keyX { get; private set; }
     public int _keyY { get; private set; }
@@ -13,13 +13,15 @@ public class Room{
     public int _enemyY { get; private set; }
     private List<Pawn> _pawns;
     Random rand = new Random();
+    public Game _game;
     private string[] _roomLayout;
     public string[] RoomLayout {
         get { return _roomLayout; }
     }
     public char[,] _roomArray = new char[10,10];
     // Generate room
-    public Room(int minW, int maxW, int minH, int maxH){
+    public Room(Game game, int minW, int maxW, int minH, int maxH){
+        _game = game;
         // Generate width and height randomly, within bounds
         // Max + 1 for consistency
         _width = rand.Next(minW, maxW + 1);
@@ -50,18 +52,33 @@ public class Room{
         }
         Player p1 = DrawPlayer(_roomLayout);
         DrawEnemy(_roomLayout);
-        DrawKey(_roomLayout);
+        DrawKey(_roomLayout,p1);
         DrawRoom(_roomLayout);
-        p1.Play();
+        StartRoom(p1);
     }
+    public void StartRoom(Player p1){
+        while (true){
+            // Move enemies
+            foreach (Pawn enemy in _pawns){
+                enemy.Movement();
+            }
+            // Check for player input
+            p1.Play();
+            // Did you die?
+            if (p1._isAlive == false){
+                _game.GameOver();
+            }
+        }
+        }
     public Player DrawPlayer(string[] _roomLayout){
-        Player p1 = new Player(this, "Player", 10, 10, 2, 1, false, rand.Next(1,9), rand.Next(1,4));
+        Player p1 = new Player(this, "Player", 10, 10, 2, 1, false, rand.Next(1,4), rand.Next(1,3));
         _roomLayout[p1._y] = _roomLayout[p1._y].Substring(0, p1._x) + p1._symbol + _roomLayout[p1._y].Substring(p1._x + 1);
         _playX = p1._x;
         _playY = p1._y;
+        _pawns.Add(p1);
         return p1;
     }
-    public Enemy DrawEnemy(string[] _roomLayout){
+    public List<Pawn> DrawEnemy(string[] _roomLayout){
         int _enemiesPlaced = 0;
         while (_enemiesPlaced < rand.Next(1,4)){
             int enemyX = rand.Next(1, _width - 1);
@@ -74,12 +91,11 @@ public class Room{
                 Enemy e1 = new Enemy(this, enemyType, "Enemy", 5, 5, rand.Next(1,4), rand.Next(0,1), false, enemyX, enemyY);
                 _pawns.Add(e1);
                 _enemiesPlaced++;
-                return e1;
             }
         }
-        return null;
+        return _pawns;
     }
-    public void DrawKey(string[] _roomLayout){
+    public void DrawKey(string[] _roomLayout, Player player){
         // Key is somewhere
         // Make sure there's only one
         bool _keyPlaced = false;
@@ -109,6 +125,23 @@ public class Room{
         }
     }
     public void UpdateLayout(string[] _roomLayout, int x, int y){
+        foreach (var pawn in _pawns) {
+            // Each Enemy must move
+            if (pawn is Enemy enemy) {
+                enemy.Movement();
+            }
+        }
+        foreach (Pawn pawn in _pawns) {
+            if (pawn is Enemy enemy) {
+                if (enemy._isAlive == true){
+                _roomLayout[enemy._y] = _roomLayout[enemy._y].Substring(0, enemy._x) + enemy._symbol + _roomLayout[enemy._y].Substring(enemy._x + 1);
+            }
+            if (_keyX != -1 && _keyY != -1) {
+                _roomLayout[_keyY] = _roomLayout[_keyY].Substring(0, _keyX) + '?' + _roomLayout[_keyY].Substring(_keyX + 1);
+            }
+            }
+            
+        }
         _roomLayout[_playY] = _roomLayout[_playY].Remove(_playX, 1).Insert(_playX, ".");
         _playX = x;
         _playY = y;
@@ -128,21 +161,21 @@ public class Room{
     public bool IsInBounds(int x, int y){
         return x >= 0 && x < _width && y >= 0 && y < _height;
     }
-    public Pawn FindClosestPawn(int x, int y){
-        Pawn closestPawn = null;
+    public Player FindPlayer(int x, int y){
+        Player closestPlayer = null;
         int minDist = int.MaxValue;
         for (int i = 0; i < _roomArray.GetLength(0); i++){
             for (int j = 0; j < _roomArray.GetLength(1); j++){
                 Pawn pawn = GetPawnAt(i,j);
-                if (pawn != null && pawn._isAlive){
+                if (pawn != null && pawn is Player && pawn._isAlive){
                     int dist = Math.Abs(x - i) + Math.Abs(y - j);
                     if (dist < minDist){
                         minDist = dist;
-                        closestPawn = pawn;
+                        closestPlayer = (Player)pawn;
                     }
                 }
             }
         }
-        return closestPawn;
+        return closestPlayer;
     }
 }

@@ -66,7 +66,7 @@ public class Pawn{
     // Attack target
     public virtual int Attack(Pawn target){
         if (target == null) {
-        Console.WriteLine($"No target present.");
+        Console.WriteLine($"No target.");
         return 0;
         }
         // Damage subtracted by Def stat
@@ -77,6 +77,7 @@ public class Pawn{
         }
         target.TakeDamage(damage);
         Console.WriteLine($"{_name} attacks {target._name} for {damage} damage!");
+        Thread.Sleep(500);
         return damage;
     }
     public void TakeDamage(int damage){

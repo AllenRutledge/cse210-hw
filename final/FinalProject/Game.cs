@@ -5,11 +5,11 @@ public class Game{
         Console.WriteLine("Please ensure you have at least 25 lines ready in Console. Press Enter when ready.");
         Console.ReadLine();
         MakeTitle();
-        Thread.Sleep(2000);
+        Thread.Sleep(3000);
         Run();
     }
     private void Run(){
-        Room room = new Room(5,20,5,19);
+        Room room = new Room(this,5,20,5,19);
         room.MakeRoom();
     }
     private void MakeTitle(){
@@ -35,10 +35,14 @@ public class Game{
         }
         Console.WriteLine(signFrame);
         Console.WriteLine(signThigh);
-        while (line != 15){
+        while (line != 14){
             Console.WriteLine(signLeg);
             line += 1;
         }
         Console.WriteLine(signFoot);
+    }
+    public void GameOver(){
+        Console.WriteLine("The dungeon has claimed you!");
+        Environment.Exit(0);
     }
 }

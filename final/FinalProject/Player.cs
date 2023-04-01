@@ -6,9 +6,6 @@ public class Player:Pawn{
         _room = room;
         _roomLayout = _room.RoomLayout;
     }
-    private ConsoleKeyInfo GetUserInput(char _symbol) {
-        return Console.ReadKey(true);
-    }
     public override void Movement(){
         ConsoleKeyInfo board = Console.ReadKey(true);  // Wait for key press
         switch (board.Key){
@@ -56,12 +53,14 @@ public class Player:Pawn{
     public void SendUpdate(int x, int y){
         _room.UpdateLayout(_roomLayout, x, y); // give changed data to Room class
         _room.DrawRoom(_roomLayout); // redraw room with new data
+        _room._playX = _x;
+        _room._playY = _y;
     }
 
     public void Play(){
         while (true){
             Movement();
-            
+
         }
     }
 
