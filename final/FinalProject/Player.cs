@@ -1,5 +1,6 @@
 public class Player:Pawn{
     private readonly string[] _roomLayout;
+
     public Player(Room room, string name, int maxhp, int hp, int atk, int def, bool isRanged, int x, int y) : base(room, name, maxhp, hp, atk, def, isRanged, x, y){
         _symbol = '@';
         _room = room;
@@ -56,9 +57,12 @@ public class Player:Pawn{
         _room.UpdateLayout(_roomLayout, x, y); // give changed data to Room class
         _room.DrawRoom(_roomLayout); // redraw room with new data
     }
+
     public void Play(){
         while (true){
             Movement();
+            
         }
     }
+
 }

@@ -1,8 +1,8 @@
     public class Enemy : Pawn{
     private Player _target;
-    public Enemy(Room room, string name, int maxhp, int hp, int atk, int def, bool isRanged, int x, int y) 
+    public Enemy(Room room, char symbol, string name, int maxhp, int hp, int atk, int def, bool isRanged, int x, int y) 
         : base(room, name, maxhp, hp, atk, def, isRanged, x, y){
-        _symbol = '&';
+        _symbol = symbol;
     }
     public override void Movement(){
         // If no target, find one

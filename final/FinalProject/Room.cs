@@ -3,11 +3,8 @@ public class Room{
     // Size
     public int _width { get; private set; }
     public int _height { get; private set; }
-    // Player position
     public int _playX { get; private set; }
     public int _playY { get; private set; }
-    // Has locked door?
-    public bool _doorsLocked { get; private set; }
     // Key position
     public int _keyX { get; private set; }
     public int _keyY { get; private set; }
@@ -15,7 +12,6 @@ public class Room{
     public int _enemyX { get; private set; }
     public int _enemyY { get; private set; }
     private List<Pawn> _pawns;
-    private Player _player;
     Random rand = new Random();
     private string[] _roomLayout;
     public string[] RoomLayout {
@@ -53,40 +49,37 @@ public class Room{
             _roomLayout[y] = row;
         }
         Player p1 = DrawPlayer(_roomLayout);
-        DrawEnemies(_roomLayout);
+        DrawEnemy(_roomLayout);
         DrawKey(_roomLayout);
         DrawRoom(_roomLayout);
         p1.Play();
     }
     public Player DrawPlayer(string[] _roomLayout){
-        // Player
         Player p1 = new Player(this, "Player", 10, 10, 2, 1, false, rand.Next(1,9), rand.Next(1,4));
-        if (_player != null){
-            _roomLayout[p1._y] = _roomLayout[p1._y].Substring(0, p1._x) + p1._symbol + _roomLayout[p1._y].Substring(p1._x + 1);
-        }
-        // Player at (_player.X, _player.Y)
         _roomLayout[p1._y] = _roomLayout[p1._y].Substring(0, p1._x) + p1._symbol + _roomLayout[p1._y].Substring(p1._x + 1);
         _playX = p1._x;
         _playY = p1._y;
         return p1;
     }
-    public void DrawEnemies(string[] _roomLayout){
-        // Enemies are somewhere
+    public Enemy DrawEnemy(string[] _roomLayout){
         int _enemiesPlaced = 0;
-        while (_enemiesPlaced < 2){
+        while (_enemiesPlaced < rand.Next(1,4)){
             int enemyX = rand.Next(1, _width - 1);
             int enemyY = rand.Next(1, _height - 1);
             if (_roomLayout[enemyY][enemyX] == '.'){
-                // Put enemy here. Is $, %, or &
-                char enemyType = rand.NextDouble() < 0.333 ? '&' : rand.NextDouble() < 0.5 ? '%' : '$';
+                // Put enemy here
+                int enemyHP = rand.Next(1,5);
+                char enemyType = rand.NextDouble() < 0.333 ? '&' : rand.NextDouble() < 0.5 ? '%' : 'B';
                 _roomLayout[enemyY] = _roomLayout[enemyY].Substring(0, enemyX) + enemyType + _roomLayout[enemyY].Substring(enemyX + 1);
-                _pawns.Add(new Enemy(this, "Enemy", 5, 5, 2, 1, false, enemyX, enemyY));
+                Enemy e1 = new Enemy(this, enemyType, "Enemy", 5, 5, rand.Next(1,4), rand.Next(0,1), false, enemyX, enemyY);
+                _pawns.Add(e1);
                 _enemiesPlaced++;
+                return e1;
             }
         }
+        return null;
     }
     public void DrawKey(string[] _roomLayout){
-        _doorsLocked = true;
         // Key is somewhere
         // Make sure there's only one
         bool _keyPlaced = false;
@@ -97,8 +90,7 @@ public class Room{
                 // Don't overlap player or enemy
                 if (_kX == _playX && _kY == _playY){
                     continue;
-                }
-                    if (GetPawnAt(_kX, _kY) != null){
+                }if (GetPawnAt(_kX, _kY) != null){
                     continue;
                 }
                 // Put key here, is ?
@@ -122,8 +114,6 @@ public class Room{
         _playY = y;
         _roomLayout[_playY] = _roomLayout[_playY].Remove(_playX, 1).Insert(_playX, "@");
     }
-
-
     public void RemoveTarget(int x, int y){
         _roomArray[x, y] = '.';
     }
