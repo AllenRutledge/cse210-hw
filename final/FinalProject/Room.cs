@@ -9,7 +9,7 @@ public class Room{
     // Key position
     public int _keyX { get; private set; }
     public int _keyY { get; private set; }
-    private List<Pawn> _pawns;
+    public List<Pawn> _pawns;
     Random rand = new Random();
     public Game _game;
     public string[] _roomLayout;

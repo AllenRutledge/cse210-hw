@@ -44,7 +44,6 @@ public class Pawn{
         }
     }
     // Move
-// Move
     public bool Move(int x, int y){
         x = Math.Clamp(x, 1, _room._roomArray.GetLength(0) - 2);
         y = Math.Clamp(y, 1, _room._roomArray.GetLength(1) - 2);

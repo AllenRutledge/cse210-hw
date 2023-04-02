@@ -9,9 +9,7 @@ public class Enemy : Pawn {
         _hp -= damage;
         if (_hp <= 0){
             Console.WriteLine($"{_name} defeated!");
-            if (_name == "Player"){
-                _game.GameOver();
-            }
+            _room._pawns.Remove(this);
             Thread.Sleep(1000);
             _isAlive = false;
             _room.RemoveTarget(_x, _y);
