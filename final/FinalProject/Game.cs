@@ -1,15 +1,14 @@
 using System;
 public class Game{
-    Random _rng = new Random();
     public void Start(){
         Console.WriteLine("Please ensure you have at least 25 lines ready in Console. Press Enter when ready.");
         Console.ReadLine();
         MakeTitle();
-        Thread.Sleep(3000);
+        Thread.Sleep(2000);
         Run();
     }
-    private void Run(){
-        Room room = new Room(this,5,20,5,19);
+    public void Run(){
+        Room room = new Room(this,10,20,7,19);
         room.MakeRoom();
     }
     private void MakeTitle(){

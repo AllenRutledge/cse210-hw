@@ -6,9 +6,9 @@ public class Room{
     public int _height { get; private set; }
     public int _playX;
     public int _playY;
-    // Key position
-    public int _keyX { get; private set; }
-    public int _keyY { get; private set; }
+    // Portal position
+    public int _portalX { get; private set; }
+    public int _portalY { get; private set; }
     public List<Pawn> _pawns;
     Random rand = new Random();
     public Game _game;
@@ -50,7 +50,7 @@ public class Room{
         }
         Player p1 = DrawPlayer(_roomLayout);
         DrawEnemy(_roomLayout);
-        DrawKey(_roomLayout,p1);
+        DrawPortal(_roomLayout,p1);
         DrawRoom(_roomLayout);
         StartRoom();
     }
@@ -74,7 +74,7 @@ public class Room{
     }
     public List<Pawn> DrawEnemy(string[] _roomLayout){
         int _enemiesPlaced = 0;
-        while (_enemiesPlaced < rand.Next(1,4)){
+        while (_enemiesPlaced < rand.Next(5,15)){
             int enemyX = rand.Next(1, _width - 1);
             int enemyY = rand.Next(1, _height - 1);
             if (_roomLayout[enemyY][enemyX] == '.'){
@@ -89,26 +89,20 @@ public class Room{
         }
         return _pawns;
     }
-    public void DrawKey(string[] _roomLayout, Player player){
-        // Key is somewhere
+    public void DrawPortal(string[] _roomLayout, Player player){
+        // Portal is somewhere
         // Make sure there's only one
-        bool _keyPlaced = false;
-        while (!_keyPlaced){
-            int _kX = rand.Next(1, _width - 1);
-            int _kY = rand.Next(1, _height - 1);
-            if (_roomLayout[_kY][_kX] == '.'){
-                // Don't overlap player or enemy
-                if (_kX == _playX && _kY == _playY){
-                    continue;
-                }if (GetPawnAt(_kX, _kY) != null){
-                    continue;
-                }
-                // Put key here, is ?
-                _roomLayout[_kY] = _roomLayout[_kY].Substring(0, _kX) + "?" + _roomLayout[_kY].Substring(_kX + 1);
-                _keyX = _kX;
-                _keyY = _kY;
-                // Tells computer: key present
-                _keyPlaced = true;
+        // Spawns in the corner for some reason
+        bool _portalPlaced = false;
+        while (!_portalPlaced){
+            int _pX = rand.Next(1, _width - 1);
+            int _pY = rand.Next(1, _height - 1);
+            if (_roomLayout[_pY][_pX] == '.'){
+                // Put portal here, is ?
+                Portal p1 = new Portal(_game, this, '?', "Portal", 4, 4, 0, 0, false, _pX, _pY);
+                _pawns.Add(p1);
+                // Tells computer: portal present
+                _portalPlaced = true;
             }
         }
     }
@@ -126,8 +120,8 @@ public class Room{
                 }else{
                     RemoveTarget(enemy._x, enemy._y);
                 }
-                if (_keyX != -1 && _keyY != -1) {
-                    _roomLayout[_keyY] = _roomLayout[_keyY].Substring(0, _keyX) + '?' + _roomLayout[_keyY].Substring(_keyX + 1);
+                if (_portalX != -1 && _portalY != -1) {
+                    _roomLayout[_portalY] = _roomLayout[_portalY].Substring(0, _portalX) + '?' + _roomLayout[_portalY].Substring(_portalX + 1);
                 }
             }
         }

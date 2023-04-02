@@ -1,7 +1,6 @@
 public class Enemy : Pawn {
     
-    public Enemy(Game game, Room room, char symbol, string name, int maxhp, int hp, int atk, int def, bool isRanged, int x, int y) 
-        : base(game, room, name, maxhp, hp, atk, def, isRanged, x, y) {
+    public Enemy(Game game, Room room, char symbol, string name, int maxhp, int hp, int atk, int def, bool isRanged, int x, int y) : base(game, room, name, maxhp, hp, atk, def, isRanged, x, y) {
         _symbol = symbol;
         _room = room;
         }

@@ -15,7 +15,7 @@ public class Pawn{
     // Room to maintain ref
     public Room _room;
     public Game _game;
-
+    public enum Direction {North,South,West,East,None}
     // Build instance of Pawn
     public Pawn(Game game, Room room, string name, int maxhp, int hp, int atk, int def, bool isRanged, int x, int y){
         _game = game;
@@ -31,12 +31,31 @@ public class Pawn{
         _y = y;
         _room._roomArray[_x, _y] = _symbol;
     }
+    
     public virtual void Movement(){}
     public void CheckCollisions(){
+        Player player = _room.FindPlayer();
+        int targetX = _x;
+        int targetY = _y;
+        switch (player._lastMoveDirection){
+        case (int)Direction.North:
+            targetY--;
+            break;
+        case (int)Direction.South:
+            targetY++;
+            break;
+        case (int)Direction.West:
+            targetX--;
+            break;
+        case (int)Direction.East:
+            targetX++;
+            break;
+        default:
+            break;
+    }
+        
         char targetChar = _room._roomArray[_x, _y];
         if (targetChar == '@' || targetChar == '$' || targetChar == '%' || targetChar == '&'){
-            int targetX = _isRanged ? _x + 1 : _x;
-            int targetY = _isRanged ? _y : _y + 1;
             Pawn targetPawn = _room.GetPawnAt(targetX, targetY);
             if (targetPawn != null){
                 Attack(targetPawn);
