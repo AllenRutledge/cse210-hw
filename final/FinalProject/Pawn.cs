@@ -1,12 +1,8 @@
 public class Pawn{
-    private string _name;
-    public string Name {
-        get { return _name; }
-        set { _name = value; }}
+    public string _name;
     // Symbol = what pawn will look like
     public char _symbol;
-    // Max HP varies between enemies
-    public int _maxhp;
+    private int _maxhp;
     public int _hp;
     // Def reduces Atk damage
     public int _atk;
@@ -18,9 +14,11 @@ public class Pawn{
     public int _y {get; set;}
     // Room to maintain ref
     public Room _room;
+    public Game _game;
 
     // Build instance of Pawn
-    public Pawn(Room room, string name, int maxhp, int hp, int atk, int def, bool isRanged, int x, int y){
+    public Pawn(Game game, Room room, string name, int maxhp, int hp, int atk, int def, bool isRanged, int x, int y){
+        _game = game;
         _room = room;
         _name = name;
         _symbol = 'X';
@@ -64,7 +62,7 @@ public class Pawn{
         return true;
     }
     // Attack target
-    public virtual int Attack(Pawn target){
+    public int Attack(Pawn target){
         if (target == null) {
         Console.WriteLine($"No target.");
         return 0;
@@ -75,15 +73,18 @@ public class Pawn{
         if (damage < 0){
             damage = 0;
         }
-        target.TakeDamage(damage);
         Console.WriteLine($"{_name} attacks {target._name} for {damage} damage!");
+        target.TakeDamage(damage);
         Thread.Sleep(500);
         return damage;
     }
-    public void TakeDamage(int damage){
+    public virtual void TakeDamage(int damage){
         _hp -= damage;
         if (_hp <= 0){
-            Console.WriteLine($"{_name} has been defeated!");
+            Console.WriteLine($"{_name} defeated!");
+            if (_name == "Player"){
+                _game.GameOver();
+            }
             Thread.Sleep(1000);
             _isAlive = false;
             _room.RemoveTarget(_x, _y);
