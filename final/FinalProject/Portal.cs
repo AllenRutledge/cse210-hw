@@ -1,5 +1,5 @@
 public class Portal: Enemy{
-    public Portal(Game game, Room room, char symbol, string name, int maxhp, int hp, int atk, int def, bool isRanged, int x, int y) : base(game, room, symbol, name, maxhp, hp, atk, def, isRanged, x, y) {
+    public Portal(Game game, Room room, char symbol, string name, int maxhp, int hp, int atk, int def, bool isRanged, int x, int y) : base(game, room, symbol, name, maxhp, hp, atk, def, isRanged, x, y){
         _room = room;
         }
     public override void TakeDamage(int damage){

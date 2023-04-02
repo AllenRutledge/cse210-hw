@@ -41,7 +41,21 @@ public class Game{
         Console.WriteLine(signFoot);
     }
     public void GameOver(){
-        Console.WriteLine("The dungeon has claimed you!");
+        string stoneSpace = "|                                  ||";
+        Console.WriteLine("   _______________________________");
+        Console.WriteLine("  /                              \\\\");
+        Console.WriteLine(" /                                \\\\");
+        Console.WriteLine("|    T H E                         ||");
+        Console.WriteLine(stoneSpace);
+        Console.WriteLine("|       D U N G E O N              ||");
+        Console.WriteLine(stoneSpace);
+        Console.WriteLine("|            H A S                 ||");
+        Console.WriteLine(stoneSpace);
+        Console.WriteLine("|              C L A I M E D       ||");
+        Console.WriteLine(stoneSpace);
+        Console.WriteLine("|                       Y O U      ||");
+        Console.WriteLine(stoneSpace);
+        Console.WriteLine("[,,,,....,,_..,,__..,,,..__...,,,_.]]");
         Environment.Exit(0);
     }
 }

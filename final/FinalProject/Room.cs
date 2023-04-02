@@ -37,7 +37,7 @@ public class Room{
     public void MakeRoom(){
         _roomLayout = new string[_height];
         // Fill edges with wall (#) and floors (.)
-        for (int y = 0; y < _height; y++) {
+        for (int y = 0; y < _height; y++){
             string row = "";
             for (int x = 0; x < _width; x++){
                 if (x == 0 || x == _width - 1 || y == 0 || y == _height - 1){
@@ -106,21 +106,21 @@ public class Room{
             }
         }
     }
-    public void DrawRoom(string[] _roomLayout) {
+    public void DrawRoom(string[] _roomLayout){
         Console.Clear();
-        for (int y = 0; y < _roomLayout.Length; y++) {
+        for (int y = 0; y < _roomLayout.Length; y++){
             Console.WriteLine(_roomLayout[y]);
         }
     }
     public void UpdateLayout(string[] _roomLayout, int x, int y){
-        foreach (Pawn pawn in _pawns) {
-            if (pawn is Enemy enemy) {
+        foreach (Pawn pawn in _pawns){
+            if (pawn is Enemy enemy){
                 if (enemy._isAlive == true){
                     _roomLayout[enemy._y] = _roomLayout[enemy._y].Substring(0, enemy._x) + enemy._symbol + _roomLayout[enemy._y].Substring(enemy._x + 1);
                 }else{
                     RemoveTarget(enemy._x, enemy._y);
                 }
-                if (_portalX != -1 && _portalY != -1) {
+                if (_portalX != -1 && _portalY != -1){
                     _roomLayout[_portalY] = _roomLayout[_portalY].Substring(0, _portalX) + '?' + _roomLayout[_portalY].Substring(_portalX + 1);
                 }
             }

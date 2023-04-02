@@ -31,7 +31,6 @@ public class Pawn{
         _y = y;
         _room._roomArray[_x, _y] = _symbol;
     }
-    
     public virtual void Movement(){}
     public void CheckCollisions(){
         Player player = _room.FindPlayer();
@@ -81,7 +80,7 @@ public class Pawn{
     }
     // Attack target
     public int Attack(Pawn target){
-        if (target == null) {
+        if (target == null){
         Console.WriteLine($"No target.");
         return 0;
         }
@@ -93,7 +92,7 @@ public class Pawn{
         }
         Console.WriteLine($"{_name} attacks {target._name} for {damage} damage!");
         target.TakeDamage(damage);
-        Thread.Sleep(500);
+        Thread.Sleep(200);
         return damage;
     }
     public virtual void TakeDamage(int damage){
